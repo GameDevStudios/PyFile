@@ -6,6 +6,7 @@ from os.path import expanduser
 
 
 import os
+import shutil
 
 
 class Filesystem():
@@ -53,6 +54,7 @@ class Filesystem():
 
         Checks if a file exists. Returns True if a file exists, false otherwise.
 
+
         Takes 1 argument:
 
         file_name - The name of the file to check.
@@ -64,7 +66,7 @@ class Filesystem():
     def pwd(self):
         '''
 
-        Returns the users current working directory. 
+        Returns the users current working directory.
 
         '''
 
@@ -74,6 +76,7 @@ class Filesystem():
         '''
 
         Returns list of items in a directory, showing hidden folders.
+
 
         Takes 1 argument:
 
@@ -95,6 +98,7 @@ class Filesystem():
         '''
 
         Changes the users directory. Returns the new directory.
+
 
         Takes 2 arguments:
 
@@ -120,6 +124,7 @@ class Filesystem():
 
         Creates a directory. Returns True if the directory already exists, returns the directory otherwise.
 
+
         Takes 3 arguments:
 
         folder_name - The name of the directory that you wish to create. Value must be provided.
@@ -132,19 +137,85 @@ class Filesystem():
             folder_path = self.working_dir
 
         if folder_name is None:
-            print "Sorry! A value must be provided for a directory name.\n\n"
+            return
 
-        if pathtype is 'abs':
+        if pathtype.startswith('abs'):
             if os.path.exists(os.path.join(folder_path, folder_name)):
                 return True
             elif not os.path.exists(os.path.join(folder_path, folder_name)):
                 os.makedirs(os.path.join(folder_path, folder_name))
 
                 return folder_path
-        elif pathtype is 'rel':
+        elif pathtype.startswith('rel'):
             if os.path.exists(os.path.join(self.working_dir, folder_name)):
                 return True
-            elif not os.path.exists(os.path.join(self.working_dir, folder_path)):
-                os.makedirs(os.path.join(self.working_dir, folder_path))
+            elif not os.path.exists(os.path.join(self.working_dir, os.path.join(folder_path, folder_name))):
+                os.makedirs(
+                    os.path.join(self.working_dir, os.path.join(folder_path, folder_name)))
 
-                return str(os.path.join(self.working_dir, folder_path))
+                return os.path.join(self.working_dir, folder_path)
+
+    def remove_dir(self, folder_name, folder_path=None, pathtype='abs'):
+        '''
+
+        Removes a specified folder at a specified directory. Note that this also removes all subdirectories and files in that directory. Returns True if the file is successfully removed, False otherwise.
+
+        Takes 3 arguments:
+
+        folder_name - Name of the folder that you wish to remove. This value cannot be blank.
+        folder_path - Path to the folder that you wish to remove. If no value is passed this is defaulted to the current working directory.
+        pathtype - The type of path. This can either be 'abs' or 'rel'.
+
+        '''
+
+        if folder_path is None:
+            folder_path = self.working_dir
+
+        if folder_name is None:
+            print "Sorry! A value must be provided for a directory name.\n\n"
+
+            return
+
+        if pathtype.startswith('abs'):
+            if os.path.exists(os.path.join(folder_path, folder_name)):
+                shutil.rmtree(os.path.join(folder_path, folder_name))
+            elif not os.path.exists(os.path.join(folder_path, folder_name)):
+                return False
+        elif pathtype.startswith('rel'):
+            if os.path.exists(os.path.join(self.working_dir, folder_name)):
+                shutil.rmtree(os.path.join(self.working_dir, folder_name))
+            elif not os.path.exists(os.path.join(self.working_dir, folder_name)):
+                return False
+
+    def dir_exists(self, folder_name, folder_path=None, pathtype='abs'):
+        '''
+
+        Checks if a file exists. Returns True if the directory name specified at the directory path exists, False otherwise.
+
+
+        Takes 3 arguments:
+
+        folder_name - The name of the folder. This cannot be blank.
+        folder_path - The path to the folder. If left blank this is defaulted to the current working directory.
+        pathtype - The type of path. This can be 'abs' or 'rel'.
+
+        '''
+
+        if folder_path is None:
+            folder_path = self.working_dir
+
+        if folder_name is None:
+            print "Sorry! A value must be provided for a directory name.\n\n"
+
+            return
+
+        if pathtype.startswith('abs'):
+            if os.path.exists(os.path.join(folder_path, folder_name)):
+                return True
+            elif not os.path.exists(os.path.join(folder_path, folder_name)):
+                return False
+        elif pathtype.startswith('rel'):
+            if os.path.exists(os.path.join(self.working_dir, folder_name)):
+                return True
+            elif not os.path.join(os.path.join(self.working_dir, folder_name)):
+                return False
