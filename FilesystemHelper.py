@@ -49,20 +49,6 @@ class Filesystem():
 
         return self.homedir
 
-    def file_exists(self, file_name):
-        '''
-
-        Checks if a file exists. Returns True if a file exists, false otherwise.
-
-
-        Takes 1 argument:
-
-        file_name - The name of the file to check.
-
-        '''
-
-        return True if os.path.exists(file_name) else False
-
     def pwd(self):
         '''
 
@@ -133,7 +119,7 @@ class Filesystem():
 
         '''
 
-        if folder_path is None:
+        if folder_path is None and pathtype.startswith('rel'):
             folder_path = self.working_dir
 
         if folder_name is None:
@@ -168,7 +154,7 @@ class Filesystem():
 
         '''
 
-        if folder_path is None:
+        if folder_path is None and pathtype.startswith('rel'):
             folder_path = self.working_dir
 
         if folder_name is None:
@@ -201,7 +187,7 @@ class Filesystem():
 
         '''
 
-        if folder_path is None:
+        if folder_path is None and pathtype.startswith('rel'):
             folder_path = self.working_dir
 
         if folder_name is None:
@@ -223,7 +209,7 @@ class Filesystem():
     def make_file(self, file_name, file_path, pathtype='abs', filemode='r+'):
         '''
 
-        Creates a new file with the specified name and path. Returns file if the file can be created, False otherwise.
+        Creates a new file with the specified name and path. Returns a new file object.
 
 
         Takes 4 arguments:
@@ -240,17 +226,39 @@ class Filesystem():
 
             return
 
-        if file_path is None:
+        if file_path is None and pathtype.startswith('rel'):
             file_path = self.working_dir
 
         if pathtype.startswith('abs'):
-            f = open(os.path.join(file_path, file_name), filemode)
+            if not os.path.exists(os.path.join(file_path, file_name)):
+                f = open(os.path.join(file_path, file_name), 'a+')
 
-            return f
+                f.close()
+
+                f = open(os.path.join(file_path, file_name), filemode)
+
+                f.close()
+
+                return f
+            else:
+                f = open(os.path.join(file_path, file_name), filemode)
+
+                return f
         elif pathtype.startswith('rel'):
-            f = open(os.path.join(file_path, file_name), filemode)
+            if not os.path.exists(os.path.join(file_path, file_name)):
+                f = open(os.path.join(file_path, file_name), 'a+')
 
-            return f
+                f.close()
+
+                f = open(os.path.join(file_path, file_name), filemode)
+
+                f.close()
+
+                return f
+            else:
+                f = open(os.path.join(file_path, file_name), filemode)
+
+                return f
 
     def read_file(self, file_name, file_object=None, file_path=None, pathtype='abs'):
         '''
@@ -277,7 +285,7 @@ class Filesystem():
 
             return
 
-        if file_path is None:
+        if file_path is None and pathtype.startswith('rel'):
             file_path = self.working_dir
 
         if file_object is None:
@@ -318,7 +326,7 @@ class Filesystem():
         if file_name is None:
             print "Sorry! A value must be provided.\n\n"
 
-        if file_path is None:
+        if file_path is None and pathtype.startswith('rel'):
             file_path = self.working_dir
 
         if file_object is None:
@@ -368,3 +376,69 @@ class Filesystem():
         f = open(file_object.name, filemode)
 
         return f
+
+    def delete_file(self, file_name, file_object=None, file_path=None, pathtype='abs'):
+        '''
+
+        Deletes a file. Returns True if the file is successfully deleted, False otherwise.
+
+
+        Takes 4 arguments:
+
+        file_name - Name of the file you wish to delete. This value cannot be blank.
+        file_object - A file object to delete. If blank then it is ignored.
+        file_path - Path to the file you wish to delete. If this is blank it is defaulted to the current working directory.
+        pathtype - Type of path. Can be either 'abs' or 'rel'.
+    
+        '''
+
+        if file_name is None and file_object is None:
+            print "Sorry! A value must be provided."
+
+            return
+
+        if file_path is None and pathtype.startswith('rel'):
+            file_path = self.working_dir
+
+        if file_object is None:
+            if pathtype.startswith('abs'):
+                if os.path.exists(os.path.join(file_path, file_name)):
+                    os.remove(os.path.join(file_path, file_name))
+
+                    return True
+                else:
+                    return False
+
+            elif pathtype.startswith('rel'):
+                if os.path.exists(os.path.join(file_path, file_name)):
+                    os.remove(os.path.join(file_path, file_name))
+
+                    return True
+                else:
+                    return False
+        elif file_object is not None:
+            os.remove(file_object.name)
+
+    def file_exists(self, file_name, file_path=None, pathtype='abs'):
+        '''
+
+        Checks if a file exists. Returns True if file exists, False otherwise.
+
+
+        Takes 3 arguments:
+
+        file_name - Name of the file to check. Cannot be left blank.
+        file_path - Path to the file to check. If left blank is defaulted to the current working directory.
+        pathtype - Type of path. Can be either 'rel' or 'abs'.
+
+        '''
+
+        if file_name is None:
+            print "Sorry! A value must be provided."
+
+            return
+
+        if file_path is None and pathtype.startswith('rel'):
+            file_path = self.working_dir
+
+        return True if os.path.exists(os.path.join(file_path, file_name)) else False
