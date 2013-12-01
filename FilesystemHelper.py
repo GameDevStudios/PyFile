@@ -219,3 +219,152 @@ class Filesystem():
                 return True
             elif not os.path.join(os.path.join(self.working_dir, folder_name)):
                 return False
+
+    def make_file(self, file_name, file_path, pathtype='abs', filemode='r+'):
+        '''
+
+        Creates a new file with the specified name and path. Returns file if the file can be created, False otherwise.
+
+
+        Takes 4 arguments:
+
+        file_name - Name of the file to create. This cannot be blank.
+        file_path - Path to the file to create. If left blank it is defaulted to the current working directory.
+        pathtype - Type of path. Can be either 'abs' or 'rel'.
+        filemode - Mode to open the file.
+
+        '''
+
+        if file_name is None:
+            print "Sorry! A value must be provided for a file name.\n\n"
+
+            return
+
+        if file_path is None:
+            file_path = self.working_dir
+
+        if pathtype.startswith('abs'):
+            f = open(os.path.join(file_path, file_name), filemode)
+
+            return f
+        elif pathtype.startswith('rel'):
+            f = open(os.path.join(file_path, file_name), filemode)
+
+            return f
+
+    def read_file(self, file_name, file_object=None, file_path=None, pathtype='abs'):
+        '''
+
+        Reads a file. Returns contents of the file, False otherwise.
+
+
+        Takes 4 arguments:
+
+        file_name - Name of the file to read from. This feild is required.
+        file_object - File object to read from. If blank this is defaulted to None, and instead creates a file based on the information provided (filename and filepath)
+        file_path - Path to the file to create. If blank this is defaulted to the current working directory.
+        pathtype - Type of path. Can be 'abs' or 'rel'.
+
+        '''
+
+        if file_name is None and file_object is None:
+            print "Sorry! A value must be provided.\n\n"
+
+            return
+
+        if file_name is None:
+            print "Sorry! A value must be provided."
+
+            return
+
+        if file_path is None:
+            file_path = self.working_dir
+
+        if file_object is None:
+            if pathtype.startswith('abs'):
+                f = open(os.path.join(file_path, file_name), 'r')
+
+                print type(f)
+
+                return f.read()
+            elif pathtype.startswith('rel'):
+                f = open(os.path.join(self.working_dir, filename), 'r')
+
+                return f.read()
+        elif file_object is not None:
+            return file_object.read()
+
+    def write_file(self, file_name, file_object=None, file_path=None, pathtype='abs', text_to_write='Hello World'):
+        '''
+
+        Writes to a file. Returns True if file is successfully written to, False otherwise.
+
+
+        Takes 5 arguments:
+
+        file_name - The name of the file to write to. A value must be provided for this.
+        file_object - An optional parameter that is a file object to write to. A value is not needed if a value is provided for file_name.
+        file_path - Path to the file to write to. If blank it is defaulted to the current working directory.
+        pathtype - Type of path. Can be 'abs' or 'rel'.
+        text_to_write - Text to write to file. If blank is defaulted to 'Hello World!'.
+
+        '''
+
+        if file_name is None and file_object is None:
+            print "Sorry! A value must be provided.\n\n"
+
+            return
+
+        if file_name is None:
+            print "Sorry! A value must be provided.\n\n"
+
+        if file_path is None:
+            file_path = self.working_dir
+
+        if file_object is None:
+            if pathtype.startswith('abs'):
+                f = open(os.path.join(file_path, file_name), 'w')
+
+                f.write(text_to_write)
+
+                return True
+            elif pathtype.startswith('rel'):
+                f = open(os.path.join(file_path, file_name), 'r')
+
+                f.write(text_to_write)
+
+                return True
+            else:
+                return False
+        elif file_object is not None:
+            file_object.write(text_to_write)
+
+            return True
+
+    def change_file_mode(self, file_object, filemode):
+        '''
+        Recreates the file by closing the file_object passed in and opening it again with the new file mode. Returns the new file object.
+
+
+        Takes 2 arguments:
+
+        file_object - The file object you wish to change the mode of. Cannot be left blank.
+        filemode - The new mode to change the file to. Cannot be left blank.
+
+        '''
+
+        if file_object is None:
+            print "Sorry! A value must be provided."
+
+            return
+
+        if filemode is None:
+            print "Sorry! A value must be provided."
+
+            return
+
+        file_object.close()
+
+        f = open(file_object.name, filemode)
+
+        return f
