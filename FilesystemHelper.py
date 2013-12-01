@@ -442,3 +442,35 @@ class Filesystem():
             file_path = self.working_dir
 
         return True if os.path.exists(os.path.join(file_path, file_name)) else False
+
+    def get_file_extension(self, file_name, file_path=None, file_object=None, pathtype='abs'):
+        '''
+
+        Gets a file extension. Returns the file extension.
+
+
+        Takes 4 arguments:
+
+        file_name - Name of the file. This cannot be left blank.
+        file_path - Path to the file. If blank this is defaulted to the users current working directory.
+        file_object - Optional parameter of a file object.
+        pathtype - Type of path. Can be either 'abs' or 'rel'.
+
+        '''
+
+        if file_name is None and file_object is None:
+            print "Sorry! A value must be provided."
+
+            return
+
+        if file_path is None and pathtype.startswith('rel'):
+            file_path = self.working_dir
+
+        if file_object is None:
+            extension = os.path.splitext(os.path.join(file_path, file_name))[1]
+
+            return extension
+        elif file_object is not None:
+            extension = os.path.splitext(file_object.name)[1]
+
+            return extension
